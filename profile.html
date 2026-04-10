@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Profile - Vũ Minh Đại</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url('https://tintuc.dienthoaigiakho.vn/wp-content/uploads/2025/02/nhung-hinh-nen-may-tinh-thien-nhien-dep-nhat-1.png') center/cover fixed no-repeat;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #f5f7ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top center, rgba(255, 255, 255, 0.18), transparent 28%),
+                  linear-gradient(180deg, rgba(12, 23, 47, 0.52), rgba(4, 9, 22, 0.92));
+      pointer-events: none;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(280px, 360px);
+      gap: 24px;
+      align-items: start;
+      width: min(1100px, calc(100vw - 32px));
+      z-index: 1;
+    }
+
+    .profile-card,
+    .game-card {
+      position: relative;
+      background: rgba(5, 10, 22, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(14px);
+      z-index: 1;
+    }
+
+    .profile-card {
+      text-align: center;
+      width: 100%;
+    }
+
+    .game-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .game-card h2 {
+      font-size: 1.65rem;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .cell {
+      aspect-ratio: 1 / 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 18px;
+      color: #f8f9ff;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      user-select: none;
+    }
+
+    .cell:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .game-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .game-controls button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #55d8ff, #7f63ff);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .game-controls button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    .status-text {
+      color: #cbd5ff;
+      font-size: 0.98rem;
+      min-width: 120px;
+    }
+
+    @media (max-width: 860px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .avatar {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.32);
+      overflow: hidden;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 0 6px rgba(81, 0, 255, 0.08);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 2.5vw, 2.6rem);
+      letter-spacing: 0.03em;
+      margin-bottom: 12px;
+    }
+
+    p.subtitle {
+      color: #cbd5ff;
+      font-size: 1rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .info-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 12px 18px;
+      margin: 8px 4px;
+      color: #e6edf8;
+      font-size: 0.95rem;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .button,
+    .button-link {
+      min-width: 140px;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      text-decoration: none;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .button-link {
+      background: linear-gradient(135deg, #5f5cff, #27e7ff);
+      box-shadow: 0 18px 36px rgba(63, 132, 255, 0.25);
+    }
+
+    .button {
+      background: linear-gradient(135deg, #ff4fb1, #9651ff);
+      box-shadow: 0 18px 36px rgba(201, 85, 255, 0.24);
+    }
+
+    .button:hover,
+    .button-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 48px rgba(255, 255, 255, 0.18);
+    }
+
+    .stars-overlay {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    #meteorCanvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #meteorCanvas.active {
+      opacity: 1;
+    }
+
+    .gift-text {
+      margin-top: 18px;
+      font-size: 0.92rem;
+      color: #a8b5ff;
+    }
+
+    .result-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 24, 0.85);
+      display: grid;
+      place-items: center;
+      z-index: 50;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .result-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .result-card {
+      width: min(520px, 100%);
+      background: rgba(6, 10, 24, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 32px 90px rgba(0, 0, 0, 0.45);
+      text-align: center;
+      color: #f7f8ff;
+      position: relative;
+    }
+
+    .result-card img {
+      width: 100%;
+      border-radius: 20px;
+      margin-bottom: 18px;
+      max-height: 340px;
+      object-fit: cover;
+    }
+
+    .result-card h3 {
+      font-size: clamp(1.4rem, 2vw, 2rem);
+      margin-bottom: 12px;
+    }
+
+    .result-card p {
+      color: #cbd5ff;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .result-card button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #fireworkCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 45;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-grid">
+    <div class="profile-card">
+      <div class="avatar">
+        <img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/419516713_881715510103231_5987274002261128769_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=53a332&_nc_eui2=AeHL99HEA11lNzEPsGujDd9FpEUHRCrC5fukRQdEKsLl-2eTmZQbXQYYjYLAKiNurjD8bzIzBMjuHqSR5-qNMydw&_nc_ohc=xJ3DCmbP3NcQ7kNvwF3jNMU&_nc_oc=AdrdKBKiwQuiPnjGdjpEFF9QiPg5w9_UIC-4xd1p7W0-7J3oMPGS2prVnh24gLbBwEM&_nc_zt=23&_nc_ht=scontent.fhan15-1.fna&_nc_gid=b5UyhDOpt7py7p-jCVFQ2w&_nc_ss=7a3a8&oh=00_Af1jDpL5mlA4QEU5VBMmJrlw3VjJHpniwU_mWb9PXvJPyA&oe=69DDFEFB" alt="Ảnh đại diện Vũ Minh Đại" />
+      </div>
+
+      <h1>Vũ Minh Đại</h1>
+      <p class="subtitle">Marketing Manager tại NEMI</p>
+
+      <div class="info-pill">Marketing manager</div>
+      <div class="info-pill">NEMI</div>
+
+      <div class="buttons">
+        <a class="button-link" href="https://www.facebook.com/vu.huge.7?locale=vi_VN" target="_blank" rel="noreferrer">
+          Facebook
+        </a>
+        <button class="button" id="giftButton">
+          Tặng quà
+        </button>
+      </div>
+
+      <p class="gift-text">Nhấn Tặng quà để nhận mưa sao băng bất ngờ.</p>
+    </div>
+
+    <div class="game-card">
+      <h2>Chơi X O</h2>
+      <div class="game-board" id="gameBoard">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+      <div class="game-controls">
+        <button id="restartBtn">Chơi lại</button>
+        <div class="status-text" id="statusText">Lượt của X</div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="meteorCanvas"></canvas>
+  <canvas id="fireworkCanvas"></canvas>
+  <div class="stars-overlay" id="starsOverlay"></div>
+
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-card">
+      <img id="resultImage" src="" alt="Kết quả" />
+      <h3 id="resultTitle">Kết quả</h3>
+      <p id="resultMessage">Thông báo chiến thắng hoặc thua.</p>
+      <button id="closeResult">Tiếp tục chơi</button>
+    </div>
+  </div>
+
+  <script>
+    const giftButton = document.getElementById('giftButton');
+    const canvas = document.getElementById('meteorCanvas');
+    const ctx = canvas.getContext('2d');
+    let meteors = [];
+    let animationFrame;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createMeteor() {
+      const angle = Math.PI * 0.2 + Math.random() * 0.12;
+      const length = Math.random() * 180 + 140;
+      const speed = Math.random() * 1000 + 1000;
+      const startX = Math.random() * canvas.width * 0.9 - canvas.width * 0.1;
+      const startY = Math.random() * canvas.height * 0.3 - canvas.height * 0.05;
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed;
+      const life = Math.random() * 0.9 + 0.9;
+      const delay = Math.random() * 320;
+
+      return {
+        x: startX,
+        y: startY,
+        vx,
+        vy,
+        length,
+        life,
+        age: 0,
+        delay,
+        alpha: 0,
+      };
+    }
+
+    function drawMeteor(meteor, dt) {
+      if (meteor.delay > 0) {
+        meteor.delay -= dt;
+        return;
+      }
+
+      meteor.age += dt;
+      meteor.alpha = Math.min(1, meteor.age / 120);
+      const progress = meteor.age / (meteor.life * 1000);
+      if (progress >= 1) {
+        meteor.finished = true;
+        return;
+      }
+
+      meteor.x += meteor.vx * (dt / 1000);
+      meteor.y += meteor.vy * (dt / 1000);
+
+      const tailX = meteor.x - meteor.vx * 0.08;
+      const tailY = meteor.y - meteor.vy * 0.08;
+
+      const gradient = ctx.createLinearGradient(tailX, tailY, meteor.x, meteor.y);
+      gradient.addColorStop(0, `rgba(255, 255, 255, ${meteor.alpha * 0.02})`);
+      gradient.addColorStop(0.6, `rgba(255, 255, 255, ${meteor.alpha * 0.12})`);
+      gradient.addColorStop(1, `rgba(255, 255, 255, ${meteor.alpha})`);
+
+      ctx.save();
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(tailX, tailY);
+      ctx.lineTo(meteor.x, meteor.y);
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(255, 255, 255, ${meteor.alpha})`;
+      ctx.beginPath();
+      ctx.arc(meteor.x, meteor.y, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function render(timestamp) {
+      const now = timestamp || performance.now();
+      const dt = Math.min(40, now - (render.lastTime || now));
+      render.lastTime = now;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      meteors.forEach(meteor => drawMeteor(meteor, dt));
+      meteors = meteors.filter(meteor => !meteor.finished);
+
+      if (meteors.length > 0) {
+        animationFrame = requestAnimationFrame(render);
+      } else {
+        canvas.classList.remove('active');
+        animationFrame = null;
+      }
+    }
+
+    function startMeteorShower() {
+      canvas.classList.add('active');
+      for (let i = 0; i < 60; i++) {
+        meteors.push(createMeteor());
+      }
+      if (!animationFrame) {
+        render();
+      }
+    }
+
+    giftButton.addEventListener('click', () => {
+      if (meteors.length === 0) {
+        startMeteorShower();
+      } else {
+        startMeteorShower();
+      }
+    });
+
+    const statusText = document.getElementById('statusText');
+    const restartBtn = document.getElementById('restartBtn');
+    const gameBoard = document.getElementById('gameBoard');
+    const cells = Array.from(document.querySelectorAll('.cell'));
+    const resultOverlay = document.getElementById('resultOverlay');
+    const resultImage = document.getElementById('resultImage');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultMessage = document.getElementById('resultMessage');
+    const closeResult = document.getElementById('closeResult');
+    const fireworkCanvas = document.getElementById('fireworkCanvas');
+    const fireworkCtx = fireworkCanvas.getContext('2d');
+
+    let boardState = Array(9).fill('');
+    let currentPlayer = 'X';
+    let isGameActive = true;
+    let fireworks = [];
+    let fireworkAnim;
+
+    const winningCombos = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    function updateStatus(message) {
+      statusText.textContent = message;
+    }
+
+    function checkWinner(state = boardState) {
+      for (const [a, b, c] of winningCombos) {
+        if (state[a] && state[a] === state[b] && state[a] === state[c]) {
+          return state[a];
+        }
+      }
+      if (!state.includes('')) {
+        return 'tie';
+      }
+      return null;
+    }
+
+    function showResult(type) {
+      resultOverlay.classList.add('visible');
+      if (type === 'win') {
+        resultImage.src = 'https://cdnphoto.dantri.com.vn/JI1-BHfC8-W9e-SPmD8rJvomI6M=/thumb_w/1020/2026/02/26/2093599746302644985jpg-1772099165364.jpg';
+        resultTitle.textContent = 'Chúc mừng bạn đã chiến thắng!';
+        resultMessage.textContent = 'Bạn đã đánh bại máy trong ván cờ X O này.';
+        startFireworks();
+      } else if (type === 'lose') {
+        resultImage.src = 'https://i2-vnexpress.vnecdn.net/2015/11/23/63838a6de5eb83533b78cd5a5fa489bcb4696585-1448249980.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=nO77sO4q_NRTBpc_i6gXdw';
+        resultTitle.textContent = 'Kém vậy hahaha';
+        resultMessage.textContent = 'Máy đã thắng bạn trong ván cờ này.';
+        stopFireworks();
+      } else {
+        resultImage.src = '';
+        resultTitle.textContent = 'Hòa rồi';
+        resultMessage.textContent = 'Ván cờ kết thúc với tỉ số hòa.';
+        stopFireworks();
+      }
+    }
+
+    function hideResult() {
+      resultOverlay.classList.remove('visible');
+      stopFireworks();
+    }
+
+    function randomEmptyIndices(state) {
+      return state.map((value, index) => (value === '' ? index : null)).filter(index => index !== null);
+    }
+
+    function findBestMove(player) {
+      const empties = randomEmptyIndices(boardState);
+      for (const index of empties) {
+        const copy = [...boardState];
+        copy[index] = player;
+        if (checkWinner(copy) === player) {
+          return index;
+        }
+      }
+      return null;
+    }
+
+    function aiChooseMove() {
+      const winMove = findBestMove('O');
+      if (winMove !== null) return winMove;
+      const blockMove = findBestMove('X');
+      if (blockMove !== null) return blockMove;
+      if (boardState[4] === '') return 4;
+      const corners = [0, 2, 6, 8].filter(i => boardState[i] === '');
+      if (corners.length) return corners[Math.floor(Math.random() * corners.length)];
+      const empties = randomEmptyIndices(boardState);
+      return empties[Math.floor(Math.random() * empties.length)];
+    }
+
+    function makeMove(index) {
+      boardState[index] = currentPlayer;
+      cells[index].textContent = currentPlayer;
+      cells[index].style.pointerEvents = 'none';
+    }
+
+    function handlePlayerMove(index) {
+      if (!isGameActive || boardState[index]) return;
+      makeMove(index);
+      const winner = checkWinner();
+      if (winner) {
+        isGameActive = false;
+        if (winner === 'X') {
+          updateStatus('Bạn chiến thắng!');
+          showResult('win');
+        } else if (winner === 'tie') {
+          updateStatus('Hòa rồi!');
+          showResult('tie');
+        }
+        return;
+      }
+
+      currentPlayer = 'O';
+      updateStatus('Máy đang đi...');
+      setTimeout(() => {
+        const aiIndex = aiChooseMove();
+        if (aiIndex !== undefined) {
+          makeMove(aiIndex);
+        }
+        const winnerAfterAI = checkWinner();
+        if (winnerAfterAI) {
+          isGameActive = false;
+          if (winnerAfterAI === 'O') {
+            updateStatus('Máy thắng!');
+            showResult('lose');
+          } else {
+            updateStatus('Hòa rồi!');
+            showResult('tie');
+          }
+          return;
+        }
+        currentPlayer = 'X';
+        updateStatus('Lượt của X');
+      }, 500);
+    }
+
+    function handleCellClick(event) {
+      const index = Number(event.target.dataset.index);
+      if (!isGameActive || boardState[index]) return;
+      handlePlayerMove(index);
+    }
+
+    function resetGame() {
+      boardState = Array(9).fill('');
+      currentPlayer = 'X';
+      isGameActive = true;
+      cells.forEach(cell => {
+        cell.textContent = '';
+        cell.style.pointerEvents = 'auto';
+      });
+      updateStatus('Lượt của X');
+      hideResult();
+    }
+
+    function resizeFireworkCanvas() {
+      fireworkCanvas.width = window.innerWidth;
+      fireworkCanvas.height = window.innerHeight;
+    }
+
+    function createFirework(x, y) {
+      const color = `hsl(${Math.random() * 360}, 100%, 80%)`;
+      const particles = [];
+      const count = 24;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * (Math.random() * 3 + 2),
+          vy: Math.sin(angle) * (Math.random() * 3 + 2),
+          alpha: 1,
+          color,
+        });
+      }
+      fireworks.push({ particles, life: 120 });
+    }
+
+    function updateFireworks() {
+      fireworkCtx.clearRect(0, 0, fireworkCanvas.width, fireworkCanvas.height);
+      fireworks.forEach(firework => {
+        firework.particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.98;
+          p.vy *= 0.98;
+          p.alpha -= 0.015;
+          fireworkCtx.fillStyle = p.color.replace('hsl(', 'hsla(').replace(')', `, ${p.alpha})`);
+          fireworkCtx.beginPath();
+          fireworkCtx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+          fireworkCtx.fill();
+        });
+        firework.life -= 1;
+      });
+      fireworks = fireworks.filter(firework => firework.life > 0);
+      if (fireworks.length > 0) {
+        fireworkAnim = requestAnimationFrame(updateFireworks);
+      } else {
+        cancelAnimationFrame(fireworkAnim);
+      }
+    }
+
+    function startFireworks() {
+      resizeFireworkCanvas();
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => createFirework(window.innerWidth * (0.2 + i * 0.25), window.innerHeight * 0.3), i * 200);
+      }
+      if (!fireworkAnim) {
+        updateFireworks();
+      }
+    }
+
+    function stopFireworks() {
+      fireworks = [];
+      fireworkCtx.clearRect(0, 0, fireworkCanvas.width, fireworkCanvas.height);
+      cancelAnimationFrame(fireworkAnim);
+      fireworkAnim = null;
+    }
+
+    window.addEventListener('resize', resizeFireworkCanvas);
+    resizeFireworkCanvas();
+
+    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    restartBtn.addEventListener('click', resetGame);
+    closeResult.addEventListener('click', hideResult);
+    resultOverlay.addEventListener('click', event => {
+      if (event.target === resultOverlay) hideResult();
+    });
+  </script>
+</body>
+</html>
